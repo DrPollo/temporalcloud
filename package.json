@@ -1,0 +1,17 @@
+{
+  "name": "temporalwordcloud",
+  "version": "1.0.0",
+  "description": "Temporal WordCloud view",
+  "main": "index.js",
+  "scripts": {
+    "test": "serve"
+  },
+  "keywords": [
+    "d3",
+    "wordcloud",
+    "time",
+    "series"
+  ],
+  "author": "Alessio Antonini",
+  "license": "MIT"
+}
