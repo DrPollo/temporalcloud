@@ -158,6 +158,8 @@
     function initListners(days, matrix) {
         var daysIndexes = days.map(function (value) { return value.toISOString(); });
         var highlight = '';
+        var highlightFrom = '';
+        var highlightTo = '';
 
         $('.tic').each(function () {
             $(this).click(function(e){
@@ -166,29 +168,81 @@
 
                 var date = moment(e.target.attributes.value.value);
 
-                // if clicked > reset
-                if(highlight === date.toISOString()){
-                    highlight = '';
-                    // reset style
-                    setStyle();
-                    return;
+
+                var isoDate = date.toISOString();
+
+                // if equal, shrink interval
+                // if(highlightFrom === isoDate){
+                //     highlightFrom = moment(isoDate).add(1,'d').toISOString();
+                // }
+                // if(highlightTo === isoDate){
+                //     highlightTo = moment(isoDate).add(-1,'d').toISOString();
+                // }
+
+                // if between
+                if(highlightFrom < isoDate && highlightTo > isoDate){
+                    // todo calc left and right deltas and compress the interval
+                    highlightFrom = isoDate;
                 }
-                $(this).addClass('highlight');
-                highlight = date.toISOString();
 
-                // get the column index of the clicked date
-                var index = daysIndexes.indexOf(highlight);
+                // update interval by extending it
+                if(highlightFrom > isoDate){
+                    highlightFrom = isoDate;
+                }
+                if(highlightTo < isoDate){
+                    highlightTo = isoDate;
+                }
 
-                // get the relevant tags
-                var tags = matrix.reduce(function (tags, layer, i) {
-                    if( typeof layer[index] === 'undefined'){return tags;}
-                    return tags.concat(layer[index]);
-                }, []);
+                if(highlightFrom === ''){
+                    highlightFrom = isoDate;
+                }
+                if(highlightTo === ''){
+                    highlightTo = isoDate;
+                }
 
-                // highlight tags
-                setStyle(tags);
+                console.log(highlightFrom,highlightTo);
 
-                console.log('click',highlight,index, tags);
+
+                // reset all styles
+                // $('.tic').removeClass('highlight');
+
+                // // calc new style
+                var start = moment(highlightFrom);
+                var end = moment(highlightTo);
+                // init array
+                var highlightDays = [highlightFrom];
+                $('th[value="'+highlightFrom+'"').addClass('highlight');
+                var delta = end.endOf('day').diff(start.startOf('day'),'days')+1;
+                // building list of days to highlight
+                for(var i = 1; i < delta; i++){
+                    var day = start.add(1,'d').toISOString();
+                    highlightDays.push(day);
+                    // set tic style
+                    $('th[value="'+day+'"').addClass('highlight');
+
+                    var index = daysIndexes.indexOf(day);
+
+                    // get the relevant tags
+                    var tags = matrix.reduce(function (tags, layer, i) {
+                        if( typeof layer[index] === 'undefined'){return tags;}
+                        return tags.concat(layer[index]);
+                    }, []);
+
+                    // highlight tags
+                    setStyle(tags);
+
+                }
+                console.log(highlightDays);
+
+
+
+                // $(this).addClass('highlight');
+                // highlight = date.toISOString();
+                //
+                // // get the column index of the clicked date
+
+
+                // console.log('click',highlight,index, tags);
             });
         });
     }
@@ -201,7 +255,7 @@
             $('.tag').each(function () {
                 // remove highlight class
                $(this).removeClass('highlight');
-               $(this).removeClass('downlight');
+               $(this).addClass('downlight');
             });
             return;
         }
@@ -211,10 +265,7 @@
             var tag = $(this).text();
             console.log('setting',tag,highlights,highlights.indexOf(tag));
             // if tag included in the highlights list
-            if(highlights.indexOf(tag) < 0 ){
-                $(this).removeClass('highlight');
-                $(this).addClass('downlight');
-            }else{
+            if(highlights.indexOf(tag) > -1 ){
                 $(this).addClass('highlight');
                 $(this).removeClass('downlight');
             }
