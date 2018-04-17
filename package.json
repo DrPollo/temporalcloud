@@ -4,7 +4,7 @@
   "description": "Temporal WordCloud view",
   "main": "index.js",
   "scripts": {
-    "test": "serve"
+    "test": "beefy index.js --live"
   },
   "keywords": [
     "d3",
@@ -13,5 +13,13 @@
     "series"
   ],
   "author": "Alessio Antonini",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^5.0.1"
+  },
+  "devDependencies": {
+    "beefy": "^2.1.8",
+    "browserify-livereload": "^1.0.10",
+    "watchify": "^3.11.0"
+  }
 }
