@@ -27,22 +27,22 @@
         border-width: 0px 0px 4px 0px;
         padding: 30px 15px 0px;
         margin-bottom: 30px;
-        border-bottom: 8px solid darkcyan;
+        border-bottom: 8px solid teal;
         font-family: "Roboto script=all rev=1", sans-serif;
         font-style: italic;
         font-weight: 100;
         font-size: 2em;
-        color: darkcyan;
+        color: teal;
         text-shadow: 1px 1px 3px white;
         cursor: pointer;
     }
 
     .highlight{
-        color:darkred !important;
-        border-color:darkred !important;
+        color:orangered !important;
+        border-color:orangered !important;
     }
     .downlight{
-        color:darkcyan !important;
+        color:teal !important;
     }
 </style>
 <table id="cloud"></table>
@@ -157,14 +157,14 @@
 
     function initListners(days, matrix) {
         var daysIndexes = days.map(function (value) { return value.toISOString(); });
-        var highlight = '';
+
         var highlightFrom = '';
         var highlightTo = '';
 
         $('.tic').each(function () {
             $(this).click(function(e){
 
-                $('.tic').each(function () {$(this).removeClass('highlight')});
+
 
                 var date = moment(e.target.attributes.value.value);
 
@@ -180,9 +180,20 @@
                 // }
 
                 // if between
-                if(highlightFrom < isoDate && highlightTo > isoDate){
-                    // todo calc left and right deltas and compress the interval
-                    highlightFrom = isoDate;
+                if(highlightFrom && highlightTo && highlightFrom < isoDate && highlightTo > isoDate){
+                    // calc left and right deltas and compress the interval
+                    var deltaLeft = moment(isoDate).endOf('day').diff(moment(highlightFrom).startOf('day'),'days');
+                    var deltaRight = moment(highlightTo).endOf('day').diff(moment(isoDate).startOf('day'),'days');
+                    console.log(deltaLeft, deltaRight);
+                    // if isoDate is closer to the beginning of the interval
+                    // change the start of the interval
+                    if(deltaLeft <= deltaRight) {
+                        console.log('left');
+                        highlightFrom = isoDate;
+                    }else{ // else change the end of the interval
+                        console.log('right');
+                        highlightTo = isoDate;
+                    }
                 }
 
                 // update interval by extending it
@@ -200,39 +211,46 @@
                     highlightTo = isoDate;
                 }
 
-                console.log(highlightFrom,highlightTo);
+                // console.log(highlightFrom,highlightTo);
 
 
                 // reset all styles
-                // $('.tic').removeClass('highlight');
+                $('.tic').each(function () {
+                    $(this).removeClass('highlight');
+                });
+                $('.tag').each(function () {
+                    $(this).removeClass('highlight');
+                    $(this).addClass('downlight');
+                });
+
 
                 // // calc new style
                 var start = moment(highlightFrom);
                 var end = moment(highlightTo);
                 // init array
-                var highlightDays = [highlightFrom];
-                $('th[value="'+highlightFrom+'"').addClass('highlight');
+                var highlightDays = [];
+                // var highlightDays = [highlightFrom];
+                // $('th[value="'+highlightFrom+'"').addClass('highlight');
                 var delta = end.endOf('day').diff(start.startOf('day'),'days')+1;
                 // building list of days to highlight
-                for(var i = 1; i < delta; i++){
-                    var day = start.add(1,'d').toISOString();
+                for(var i = 0; i < delta; i++){
+                    var day = start.add(Math.min(i,1),'d').toISOString();
                     highlightDays.push(day);
                     // set tic style
                     $('th[value="'+day+'"').addClass('highlight');
 
                     var index = daysIndexes.indexOf(day);
-
+                    // console.log(index);
                     // get the relevant tags
                     var tags = matrix.reduce(function (tags, layer, i) {
                         if( typeof layer[index] === 'undefined'){return tags;}
                         return tags.concat(layer[index]);
                     }, []);
-
+                    // console.log(tags);
                     // highlight tags
                     setStyle(tags);
-
                 }
-                console.log(highlightDays);
+                // console.log(highlightDays);
 
 
 
@@ -248,7 +266,7 @@
     }
 
     function setStyle(highlights) {
-        console.log('highlights',highlights);
+        // console.log('highlights',highlights);
         // reset style
         if(typeof highlights === 'undefined' || !highlights || highlights === ''){
             // reset all style
@@ -263,7 +281,7 @@
         // set style
         $('.tag').each(function () {
             var tag = $(this).text();
-            console.log('setting',tag,highlights,highlights.indexOf(tag));
+            // console.log('setting',tag,highlights,highlights.indexOf(tag));
             // if tag included in the highlights list
             if(highlights.indexOf(tag) > -1 ){
                 $(this).addClass('highlight');
