@@ -168,6 +168,7 @@ function initListners(days, matrix) {
             // reset all styles
             $('.tic').each(function () {
                 $(this).removeClass('highlight');
+                $(this).addClass('downlight');
             });
             $('.tag').each(function () {
                 $(this).removeClass('highlight');
@@ -194,6 +195,7 @@ function initListners(days, matrix) {
                 var day = start.add(Math.min(i,1),'d').toISOString();
                 highlightDays.push(day);
                 // set tic style
+                $('th[value="'+day+'"').removeClass('downlight');
                 $('th[value="'+day+'"').addClass('highlight');
 
                 var index = daysIndexes.indexOf(day);
@@ -220,14 +222,14 @@ function initListners(days, matrix) {
                     return val;
                 },0);
                 var i = r.map(function (value) { return value.key }).indexOf(text);
-                console.log(text, i);
+                // console.log(text, i);
                 if(i < 0){
                     return r.concat({key:text,value:size});
                 }
                 r[i].value = size;
                 return r;
             },[]);
-            console.log('here ',miniCloud.map(function (value) { return Object.assign({},value); }));
+            // console.log(miniCloud.map(function (value) { return Object.assign({},value); }));
             drawMiniCloud(miniCloud);
         });
     });
@@ -413,8 +415,9 @@ function renderTable(cloud) {
             var fontSize = size(value),
                 fontWeight = weigth(distance);
             // console.log(fontSize);
+            var color = getRandomColor();
             var cell = '<span style="font-size:' + fontSize + 'px;font-weight:' + fontWeight + '; ">' + item.key + '</span>';
-            return row.concat('<th class="tag" colspan="', item.length, '">', cell, '</th>');
+            return row.concat('<th style="color:'+color+'" class="tag" colspan="', item.length, '">', cell, '</th>');
         }, '')
 
         if (i % 2 === 0) {
@@ -546,4 +549,13 @@ function reset() {
 }
 function toggleResize() {
     console.log('toggle resize');
+}
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+function getRandomColor() {
+
+    var min = 0;
+    var max = 200;
+    var rand = Math.floor(Math.random() * (max - min + 1)) + min;
+    // console.log(rand, color(rand), d3.schemeCategory20, color);
+    return color(rand);
 }
