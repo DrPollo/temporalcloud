@@ -59,22 +59,24 @@
         width: 200px;
         height: 200px;
         box-shadow: 0px 0px 5px rgba(0,0,0,0.35);
-        background-color: rgba(255,255,255,0.8);
+        background-color: rgba(0,0,0,0.85);
+        /*background-color: rgba(255,255,255,0.8);*/
     }
     #mini-cloud.full-size{
         width: calc(100% - 20px);
         height: calc(100% - 20px);
-        background-color: rgba(255,255,255,1);
+        /*background-color: rgba(255,255,255,1);*/
     }
     #mini-cloud button{
         position: absolute;
         top:0;
         left: 0;
-        background-color: rgba(255,255,255,0.7);
+        background-color: transparent;
         border-width: 0px;
         padding: 2px;
         transform: rotate(-90deg);
         cursor: pointer;
+        color:white;
     }
     #mini-cloud.full-size button{
         transform: rotate(90deg);
@@ -85,6 +87,10 @@
         left: 10px;
         display: none;
         z-index: 1;
+        /* background-color: rgba(0,0,0,0.85); */
+        /* color: white; */
+        padding: 6px 12px;
+        box-shadow: 0px 0px 5px rgba(0,0,0,0.35);
     }
     #interval label {
         font-family: "Roboto script=all rev=1", sans-serif;
@@ -97,6 +103,10 @@
         border-width: 0px;
         padding: 2px;
         cursor: pointer;
+    }
+    #interval label .tag, #interval label .date {
+        /*font-style: italic;*/
+        font-weight: bold;
     }
 </style>
 <div id="interval">
