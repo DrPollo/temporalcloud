@@ -236,7 +236,7 @@ function start(data) {
     dataSource = Object.assign([], data.map(function (value) {
         return {text: value.tag.toLowerCase(), size: parseInt(value.value), day: moment(value.since).toISOString()}
     }));
-    console.log(dataSource);
+    // console.log(dataSource);
     // elaborate the CSV into the data structure
     var tags = data.reduce(function (res, val) {
         if (stopwords.indexOf(val.tag.toLowerCase()) > -1) {
@@ -309,11 +309,11 @@ function start(data) {
     // building the matrix
     var matrix = buildMatrix(tags, days);
 
-    console.log(matrix);
+    // console.log(matrix);
     // building the cloud tags
     var cloud = buildCloud(matrix);
 
-    console.log(cloud);
+    // console.log(cloud);
     // rendering the cloud
     renderTable(cloud);
 
@@ -342,11 +342,12 @@ function initListners(days, matrix) {
     // click on tag
     $('.tag').click((e) => {
         const t = Object.assign({}, e);
-        console.log(t);
+        // console.log(t);
         const id = t.currentTarget.id.slice(0);
-        console.log(id);
+        // console.log(id);
         const text = t.currentTarget.innerText.slice(0);
-        console.log(id, text);
+        if(!id || !text){return;}
+        // console.log(id, text);
         setTag(id, text);
     });
 
@@ -360,14 +361,14 @@ function initListners(days, matrix) {
             // calc left and right deltas and compress the interval
             var deltaLeft = moment(isoDate).endOf('day').diff(moment(highlightFrom).startOf('day'), 'days');
             var deltaRight = moment(highlightTo).endOf('day').diff(moment(isoDate).startOf('day'), 'days');
-            console.log(deltaLeft, deltaRight);
+            // console.log(deltaLeft, deltaRight);
             // if isoDate is closer to the beginning of the interval
             // change the start of the interval
             if (deltaLeft <= deltaRight) {
-                console.log('left');
+                // console.log('left');
                 highlightFrom = isoDate;
             } else { // else change the end of the interval
-                console.log('right');
+                // console.log('right');
                 highlightTo = isoDate;
             }
         }
@@ -655,7 +656,7 @@ function buildCloud(matrix) {
         // console.log(newLayer);
         return newLayer;
     });
-    console.log(cloud);
+    // console.log(cloud);
     return cloud;
 }
 
@@ -723,7 +724,7 @@ function generateDates(start, end) {
 // d3 cloud
 function drawMiniCloud(tags) {
     dataMiniCloud = Array.from(tags);
-    console.log('minicloud', tags);
+    // console.log('minicloud', tags);
     $('#mini-cloud').show();
     d3.select("#mini-cloud").select('svg').remove();
     var minMax = tags.reduce(function (r, v) {
@@ -780,7 +781,7 @@ function drawMiniCloud(tags) {
     layout.start();
 
     function draw(words) {
-        console.log(words);
+        // console.log(words);
         d3.select("#mini-cloud").append("svg")
             .attr("width", layout.size()[0])
             .attr("height", layout.size()[1])
@@ -808,7 +809,9 @@ function drawMiniCloud(tags) {
 
 
 function setTag(tagID, tag) {
-    console.log(tagID, tag);
+    // console.log(tagID, tag);
+
+    // console.log(tagID, tag);
     resetStyleDates();
     // reduce dates relate to the tag with the tag value
     let days = dataSource.reduce((r, e) => {
@@ -817,7 +820,7 @@ function setTag(tagID, tag) {
         }
         return r;
     }, []);
-    console.log('setTag > minicloud', days);
+    // console.log('setTag > minicloud', days);
     // rendering a minicloud
     drawMiniCloud(days);
     // add tag to the legend
